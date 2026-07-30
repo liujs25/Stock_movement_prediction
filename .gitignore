@@ -1,9 +1,41 @@
-.DS_Store
-**/.DS_Store
-__pycache__/
-*.py[cod]
-.env
-.env.*
+# Python virtual environments
 .venv/
 venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local environment files
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Raw and large data files
+data/raw/
+data/processed/*.parquet
+data/processed/*.csv
+
+# Model outputs
+models/
+outputs/
+
+# Logs
+*.log
+
+# OS / editor files
+.DS_Store
+**/.DS_Store
+Thumbs.db
+.vscode/
+
+# Temporary files
+*.tmp
+*.bak
+
+# Large generated report files
+reports/midprice_check.csv
+reports/*_check.csv
 

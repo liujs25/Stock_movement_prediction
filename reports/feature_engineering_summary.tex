@@ -1,0 +1,395 @@
+\documentclass[UTF8,a4paper,12pt]{ctexart}
+
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.6cm,bottom=2.6cm}
+\setlist[itemize]{leftmargin=2em,itemsep=0.25em,topsep=0.25em}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Feature Engineering Summary}
+\rhead{Stock Movement Prediction}
+\cfoot{\thepage}
+
+\lstdefinestyle{pythonstyle}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{teal},
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  showstringspaces=false
+}
+
+\lstset{style=pythonstyle}
+
+\title{股票快照价格移动方向预测\\特征工程报告}
+\author{同学 A：EDA 与特征工程负责人}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{特征工程目标}
+
+本脚本将 \texttt{data/raw/} 下的原始股票快照 CSV 文件处理成建模可用的表格特征数据。特征工程的核心目标是：在不引入未来信息、不跨文件构造时间窗口的前提下，将原始盘口快照数据转换为可以直接输入机器学习模型的结构化特征矩阵。
+
+最终输出的数据将交给建模同学 B，用于分别训练 \texttt{label\_5}、\texttt{label\_10}、\texttt{label\_20}、\texttt{label\_40}、\texttt{label\_60} 五个未来价格移动方向预测任务。
+
+\section{输入数据}
+
+\begin{itemize}
+  \item 原始文件路径：\texttt{data\textbackslash raw}
+  \item 扫描到的 CSV 文件数量：1521
+  \item 成功读取文件数：1521
+  \item 读取失败文件数：0
+  \item 跳过文件数：0
+\end{itemize}
+
+原始文件命名格式为：
+
+\begin{center}
+\texttt{snapshot\_sym<xx>\_date<yy>\_am/pm.csv}
+\end{center}
+
+其中，\texttt{sym} 表示证券标的编号，\texttt{date} 表示交易日编号，\texttt{am/pm} 表示上午或下午交易时段。
+
+\section{输出数据}
+
+\begin{itemize}
+  \item 表格特征文件路径：\texttt{data\textbackslash processed\textbackslash tabular\_features.parquet}
+  \item 特征列文件路径：\texttt{data\textbackslash processed\textbackslash feature\_columns.json}
+  \item 最终样本数：2,889,900
+  \item 最终总列数：218
+  \item 最终模型特征数：207
+\end{itemize}
+
+\texttt{tabular\_features.parquet} 是建模主数据文件，一行对应一个 tick 样本；\texttt{feature\_columns.json} 记录模型输入特征列，不包含标签列和追踪字段。
+
+\section{构造的特征类别}
+
+本次特征工程构造了以下类型的特征。
+
+\subsection{原始基础特征}
+
+保留或兼容以下原始字段：
+
+\begin{itemize}
+  \item \texttt{n\_close} 或 \texttt{close}
+  \item \texttt{amount\_delta}
+  \item \texttt{n\_midprice}
+  \item \texttt{n\_bid1} 至 \texttt{n\_bid5}
+  \item \texttt{n\_ask1} 至 \texttt{n\_ask5}
+  \item \texttt{n\_bsize1} 至 \texttt{n\_bsize5}
+  \item \texttt{n\_asize1} 至 \texttt{n\_asize5}
+\end{itemize}
+
+\subsection{成交金额变换特征}
+
+由于 EDA 阶段发现 \texttt{amount\_delta} 分布极度右偏，本次新增：
+
+\begin{center}
+\texttt{log\_amount\_delta = log1p(max(amount\_delta, 0))}
+\end{center}
+
+该变换可以降低极端值对模型训练的影响。
+
+\subsection{Crossed Book 特征}
+
+为了保留而非直接删除异常盘口样本，新增：
+
+\begin{center}
+\texttt{is\_crossed\_book = 1 if n\_bid1 > n\_ask1 else 0}
+\end{center}
+
+该特征用于标记买一价高于卖一价的盘口状态。
+
+\subsection{Midprice 质量检查特征}
+
+不覆盖原始 \texttt{n\_midprice}，而是额外构造质量检查特征：
+
+\begin{itemize}
+  \item \texttt{calc\_midprice}
+  \item \texttt{midprice\_diff}
+  \item \texttt{abs\_midprice\_diff}
+  \item \texttt{is\_midprice\_mismatch}
+\end{itemize}
+
+其中，\texttt{calc\_midprice} 根据 \texttt{n\_bid1} 和 \texttt{n\_ask1} 规则计算；\texttt{midprice\_diff} 表示原始 \texttt{n\_midprice} 与重算值之间的差异。
+
+\subsection{Spread 特征}
+
+构造一至五档买卖价差：
+
+\begin{itemize}
+  \item \texttt{spread\_1 = n\_ask1 - n\_bid1}
+  \item \texttt{spread\_2 = n\_ask2 - n\_bid2}
+  \item \texttt{spread\_3 = n\_ask3 - n\_bid3}
+  \item \texttt{spread\_4 = n\_ask4 - n\_bid4}
+  \item \texttt{spread\_5 = n\_ask5 - n\_bid5}
+  \item \texttt{spread\_pct = spread\_1 / (abs(n\_midprice) + 1e-8)}
+\end{itemize}
+
+\subsection{Depth 特征}
+
+构造盘口深度相关特征：
+
+\begin{itemize}
+  \item \texttt{bid\_depth}: 买一到买五总量
+  \item \texttt{ask\_depth}: 卖一到卖五总量
+  \item \texttt{total\_depth}: 买卖盘总深度
+  \item \texttt{depth\_diff}: 买盘深度与卖盘深度之差
+\end{itemize}
+
+\subsection{Imbalance 特征}
+
+构造总买卖盘不平衡特征：
+
+\begin{center}
+\texttt{imbalance\_total = (bid\_depth - ask\_depth) / (bid\_depth + ask\_depth + 1e-8)}
+\end{center}
+
+同时构造一至五档的分档不平衡特征 \texttt{imbalance\_1} 至 \texttt{imbalance\_5}。
+
+\subsection{加权中间价特征}
+
+构造一档加权中间价：
+
+\begin{center}
+\texttt{weighted\_midprice\_1 = (n\_ask1 * n\_bsize1 + n\_bid1 * n\_asize1) / (n\_bsize1 + n\_asize1 + 1e-8)}
+\end{center}
+
+该特征用于刻画盘口数量对价格方向的潜在影响。
+
+\subsection{价格变化特征}
+
+在每个文件内部构造过去价格变化特征：
+
+\begin{itemize}
+  \item \texttt{mid\_diff\_1}
+  \item \texttt{mid\_diff\_5}
+  \item \texttt{mid\_diff\_10}
+  \item \texttt{mid\_diff\_20}
+\end{itemize}
+
+这些特征只使用当前 tick 与过去 tick 的价格差，不使用未来信息。
+
+\subsection{Rolling 特征}
+
+窗口设置为 5、10、20、50、100。对以下变量计算 rolling mean、std、min、max、change：
+
+\begin{itemize}
+  \item \texttt{n\_midprice}
+  \item \texttt{spread\_1}
+  \item \texttt{imbalance\_total}
+  \item \texttt{bid\_depth}
+  \item \texttt{ask\_depth}
+  \item \texttt{log\_amount\_delta}
+\end{itemize}
+
+此外，对 \texttt{log\_amount\_delta} 额外计算 rolling sum。所有 rolling 特征均在单个 CSV 文件内部构造，不跨文件、不跨股票、不跨日期、不跨上午/下午 session。
+
+\section{清洗策略}
+
+\begin{longtable}{p{8cm}p{5cm}}
+\toprule
+\textbf{清洗项} & \textbf{处理策略} \\
+\midrule
+是否删除 crossed book & 否 \\
+是否保留 \texttt{is\_crossed\_book} & 是 \\
+是否覆盖 \texttt{n\_midprice} & 否 \\
+是否删除 rolling NaN & 是 \\
+是否补齐缺失文件 & 否 \\
+是否删除最后 60 行 & 否 \\
+\bottomrule
+\end{longtable}
+
+其中，rolling 窗口最大为 100，因此每个文件前 99 行会因历史窗口不足而被删除。最后 60 行没有被额外删除，因为原始数据已经提供了标签列。
+
+\section{标签列}
+
+最终保留以下五个目标变量，它们不会进入 \texttt{feature\_columns.json}：
+
+\begin{itemize}
+  \item \texttt{label\_5}
+  \item \texttt{label\_10}
+  \item \texttt{label\_20}
+  \item \texttt{label\_40}
+  \item \texttt{label\_60}
+\end{itemize}
+
+五个标签分别对应未来 5、10、20、40、60 tick 的中间价移动方向。
+
+\section{数据质量检查}
+
+\begin{longtable}{p{8cm}p{5cm}}
+\toprule
+\textbf{检查项} & \textbf{结果} \\
+\midrule
+原始总行数 & 3,040,479 \\
+Rolling 删除行数 & 150,579 \\
+最终样本数 & 2,889,900 \\
+期望 rolling 后样本数 & 2,889,900 \\
+实际保存到 parquet 的行数 & 2,889,900 \\
+\texttt{feature\_columns.json} 包含 \texttt{sym\_id} & 是 \\
+\texttt{feature\_columns.json} 包含 \texttt{session} & 是 \\
+\texttt{feature\_columns.json} 不包含 \texttt{date\_id} & 是 \\
+\texttt{feature\_columns.json} 不包含追踪字段和标签列 & 是 \\
+特征中是否仍有 NaN & 否，0 个 \\
+特征中是否仍有 Inf & 否，0 个 \\
+标签列是否存在 & 是 \\
+是否有文件因行数少于 100 而全部删除 & 否 \\
+\bottomrule
+\end{longtable}
+
+样本数关系为：
+
+\begin{center}
+\texttt{3,040,479 - 150,579 = 2,889,900}
+\end{center}
+
+且：
+
+\begin{center}
+\texttt{150,579 = 1,521 × 99}
+\end{center}
+
+这说明每个文件均因 rolling 100 窗口删除了前 99 行，符合预期。
+
+\section{每个文件处理后的行数}
+
+共处理文件数为 1521。完整逐文件统计已保存到：
+
+\begin{center}
+\texttt{reports\textbackslash file\_feature\_row\_counts.csv}
+\end{center}
+
+Markdown 报告仅展示前 10 个文件示例：
+
+\begin{longtable}{p{6.3cm}rrrr}
+\toprule
+\textbf{文件名} & \textbf{原始行数} & \textbf{保留行数} & \textbf{删除行数} & \textbf{状态} \\
+\midrule
+\texttt{snapshot\_sym0\_date0\_am.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date0\_pm.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date10\_am.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date10\_pm.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date11\_am.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date11\_pm.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date12\_am.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date12\_pm.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date13\_am.csv} & 1999 & 1900 & 99 & 成功 \\
+\texttt{snapshot\_sym0\_date13\_pm.csv} & 1999 & 1900 & 99 & 成功 \\
+\bottomrule
+\end{longtable}
+
+\section{数据泄露检查}
+
+为保证训练数据严格符合时间序列预测任务要求，本次特征工程进行了以下数据泄露控制：
+
+\begin{itemize}
+  \item 每个 CSV 文件单独构造特征，不跨股票、不跨日期、不跨 am/pm session。
+  \item 在构造 \texttt{mid\_diff} 和 rolling 特征前，已在单个文件内部按 \texttt{time} 升序排序。
+  \item rolling 特征只使用当前 tick 及过去 tick，不使用未来信息。
+  \item \texttt{mid\_diff} 特征只使用过去 tick，不使用未来价格。
+  \item \texttt{label\_5}、\texttt{label\_10}、\texttt{label\_20}、\texttt{label\_40}、\texttt{label\_60} 只作为目标变量，不进入 \texttt{feature\_columns.json}。
+  \item \texttt{date\_id} 只用于训练集、验证集、测试集的时间顺序划分，不作为模型输入特征。
+  \item 最后 60 行未被额外删除，因为原始数据已提供标签。
+\end{itemize}
+
+\section{缺失字段说明}
+
+本次特征工程未发现影响主要特征构造的关键字段缺失问题。若后续更换数据版本，应重新检查字段完整性，并确认 \texttt{n\_midprice}、盘口价格、盘口数量和标签列是否完整。
+
+\section{给建模同学 B 的说明}
+
+\subsection{读取数据}
+
+建模同学可以使用以下代码读取特征文件：
+
+\begin{lstlisting}
+import pandas as pd
+import json
+
+df = pd.read_parquet('data/processed/tabular_features.parquet')
+with open('data/processed/feature_columns.json', 'r', encoding='utf-8') as f:
+    feature_columns = json.load(f)
+
+X = df[feature_columns]
+y = df['label_5']
+\end{lstlisting}
+
+如果需要分别训练五个预测窗口，可以使用：
+
+\begin{lstlisting}
+target_cols = ['label_5', 'label_10', 'label_20', 'label_40', 'label_60']
+
+for target in target_cols:
+    X = df[feature_columns]
+    y = df[target]
+    # train one model for each target
+\end{lstlisting}
+
+\subsection{重要提示}
+
+\begin{itemize}
+  \item 训练 \texttt{label\_5}、\texttt{label\_10}、\texttt{label\_20}、\texttt{label\_40}、\texttt{label\_60} 时应分别建模。
+  \item \texttt{date\_id} 仅用于按时间顺序划分训练集、验证集、测试集，不作为模型输入特征。
+  \item \texttt{sym\_id} 和 \texttt{session} 当前被保留并作为模型输入特征。
+  \item 训练集、验证集、测试集必须严格按 \texttt{date\_id} 的时间顺序划分，不能随机划分。
+  \item \texttt{feature\_columns.json} 中不包含标签列和追踪字段，如 \texttt{date}、\texttt{time}、\texttt{source\_file}、\texttt{sym}、\texttt{session\_name}、\texttt{date\_id}。
+  \item \texttt{source\_file} 和 \texttt{time} 仅用于样本追踪，不用于训练。
+\end{itemize}
+
+\subsection{最终校验命令}
+
+交付前可使用以下代码进行最终校验：
+
+\begin{lstlisting}
+import pandas as pd
+import json
+
+df = pd.read_parquet('data/processed/tabular_features.parquet')
+with open('data/processed/feature_columns.json', 'r', encoding='utf-8') as f:
+    feature_columns = json.load(f)
+
+bad_cols = [
+    c for c in [
+        'source_file', 'date', 'time', 'sym', 'session_name', 'date_id',
+        'label_5', 'label_10', 'label_20', 'label_40', 'label_60'
+    ]
+    if c in feature_columns
+]
+
+print(df.shape)
+print(len(feature_columns))
+print(bad_cols)
+\end{lstlisting}
+
+理想输出为：
+
+\begin{center}
+\texttt{(2889900, 218)}\\
+\texttt{207}\\
+\texttt{[]}
+\end{center}
+
+\section{阶段性结论}
+
+本次特征工程已成功将 1521 个原始快照 CSV 文件转换为包含 2,889,900 个样本、207 个模型输入特征的表格建模数据。样本构造过程中严格遵守了单文件内部 rolling、不跨股票/日期/session、不使用未来信息、标签不进入特征列、\texttt{date\_id} 不进入模型输入等原则。因此，该版本可以作为建模阶段的第一版正式输入数据。
+
+\end{document}
