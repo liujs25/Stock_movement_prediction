@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+artifacts/cache/
+artifacts/models/
+artifacts/metrics/
+artifacts/submission_package/
+artifacts/*.zip
+artifacts/*.json

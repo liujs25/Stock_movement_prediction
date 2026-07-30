@@ -1,0 +1,67 @@
+[
+  {
+    "label": "label_5",
+    "model_path": "/Users/cgt/Desktop/Stock_Movement_Prediction/Submission_XGBoost/artifacts/models/model_label_5.json",
+    "threshold": 0.88,
+    "train_samples": 28891,
+    "val_samples": 23783,
+    "train_label_counts": {
+      "0": 3684,
+      "1": 21759,
+      "2": 3448
+    },
+    "best_iteration": 2
+  },
+  {
+    "label": "label_10",
+    "model_path": "/Users/cgt/Desktop/Stock_Movement_Prediction/Submission_XGBoost/artifacts/models/model_label_10.json",
+    "threshold": 0.88,
+    "train_samples": 28891,
+    "val_samples": 23783,
+    "train_label_counts": {
+      "0": 5408,
+      "1": 18706,
+      "2": 4777
+    },
+    "best_iteration": 2
+  },
+  {
+    "label": "label_20",
+    "model_path": "/Users/cgt/Desktop/Stock_Movement_Prediction/Submission_XGBoost/artifacts/models/model_label_20.json",
+    "threshold": 0.88,
+    "train_samples": 28891,
+    "val_samples": 23783,
+    "train_label_counts": {
+      "0": 3257,
+      "1": 22616,
+      "2": 3018
+    },
+    "best_iteration": 2
+  },
+  {
+    "label": "label_40",
+    "model_path": "/Users/cgt/Desktop/Stock_Movement_Prediction/Submission_XGBoost/artifacts/models/model_label_40.json",
+    "threshold": 0.88,
+    "train_samples": 28891,
+    "val_samples": 23783,
+    "train_label_counts": {
+      "0": 5574,
+      "1": 18702,
+      "2": 4615
+    },
+    "best_iteration": 2
+  },
+  {
+    "label": "label_60",
+    "model_path": "/Users/cgt/Desktop/Stock_Movement_Prediction/Submission_XGBoost/artifacts/models/model_label_60.json",
+    "threshold": 0.88,
+    "train_samples": 28891,
+    "val_samples": 23783,
+    "train_label_counts": {
+      "0": 6922,
+      "1": 16523,
+      "2": 5446
+    },
+    "best_iteration": 2
+  }
+]

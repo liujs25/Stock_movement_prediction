@@ -1,0 +1,232 @@
+[
+  {
+    "threshold": 0.0,
+    "signal_pct": 0.6591525777499478,
+    "precision": 0.23633101118851593,
+    "recall": 0.46022610483042137,
+    "f05": 0.2618039802119747,
+    "total_pnl": 1.6531847715377808,
+    "avg_pnl": 0.00017449702136218548,
+    "official_score_est": -0.00013313149545571957
+  },
+  {
+    "threshold": 0.5,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.55,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.6,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.65,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.7,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.72,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.73,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.74,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.75,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.78,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.8,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.82,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.84,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.85,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.88,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.9,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.92,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.94,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.95,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.96,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.97,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  },
+  {
+    "threshold": 0.98,
+    "signal_pct": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f05": 0.0,
+    "total_pnl": 0.0,
+    "avg_pnl": 0.0,
+    "official_score_est": -0.0
+  }
+]

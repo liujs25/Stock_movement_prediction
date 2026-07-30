@@ -1,0 +1,29 @@
+[
+  {
+    "label": "label_20",
+    "feature_set": "previous_code",
+    "storage_mode": "buffer",
+    "model_path": "/Users/cgt/Desktop/Stock_Movement_Prediction/Reproduction_XGBoost/artifacts/current_style_smoke/models/model_label_20.json",
+    "threshold": 0.88,
+    "train_samples": 56089,
+    "val_samples": 14373,
+    "train_label_counts": {
+      "0": 6057,
+      "1": 44428,
+      "2": 5604
+    },
+    "best_iteration": 4,
+    "param_preset": "previous_code",
+    "max_bin": 256,
+    "gpu_batch_mode": "cupy",
+    "cache_host_ratio": null,
+    "max_quantile_batches": null,
+    "min_cache_page_bytes": null,
+    "class_weighting": true,
+    "profit_weighting": false,
+    "profit_weight_base": 0.5,
+    "profit_weight_alpha": 1.5,
+    "profit_weight_min": 0.1,
+    "profit_weight_max": 10.0
+  }
+]
